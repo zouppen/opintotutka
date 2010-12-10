@@ -7,28 +7,18 @@ import Text.Parsec.Text
 import Text.Parsec.Prim
 import Text.Parsec.Combinator
 import Control.Monad (liftM)
+import Data.Maybe (catMaybes)
 import CalendarHelpers
+import Records                
 
-data Student =  Student { lastName :: String
-                        , firstName :: String
-                        , birthday :: Day
-                        , rightToStudy :: String
-                        , degreeTarget :: String
-                        , degreeProgramme :: Maybe String
-                        , alternative :: Maybe String
-                        , majorSubject :: String
-                        , enrolmentYear :: Integer
-                        , faculty :: String
-                        } deriving (Show)
-                
-parseJoreFromFile :: String -> IO Student
+--parseJoreFromFile :: String -> IO (Student,[Maybe Record])
 parseJoreFromFile f = do 
   result <- parseFromUtf8File parseJore f
   case result of
     Left a -> fail $ show a
     Right a -> return a
 
-parseJore :: Parser Student
+parseJore :: Parser (Student,[Record])
 parseJore = do
   title
   finnishDate
@@ -39,7 +29,8 @@ parseJore = do
   newline
   student <- studentRecord
   dashline
-  return student
+  recs <- takeAnythingYouWant
+  return (student,recs)
 
 studentRecord :: Parser Student
 studentRecord = do
@@ -106,3 +97,33 @@ dashline = do
   manyTill (char '-') newline
   return ()
 
+recordLine = do
+  count 2 space
+  name <- count 36 anyChar
+  space
+  code <- count 7 anyChar
+  space
+  date <- finnishDate
+  space
+  rawgrade <- count 3 anyChar
+  space
+  rawLevel <- count 2 anyChar
+  space
+  credits <- liftM read $ count 5 anyChar
+  newline
+  
+  return $ Record
+    code
+    name
+    date
+    Pass -- FIXME
+    GeneralStudies -- FIXME
+    credits
+    
+recordOrNothing :: Parser (Maybe Record)
+recordOrNothing = do
+  try (liftM Just recordLine) <|> (manyTill anyChar newline >> return Nothing)
+  
+takeAnythingYouWant = do
+  recs <- manyTill recordOrNothing eof
+  return $ catMaybes recs
