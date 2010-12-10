@@ -1,6 +1,20 @@
 JORE student record parser
 ==========================
 
+Installation
+------------
+
+This requires Haskell Platform and at least the following package:
+
+- text
+
+This can be fetched on Ubuntu by installing the following package:
+
+- libghc6-text-dev
+
+Usage
+-----
+
 I suppose you have access to Korppi which is study data system in
 University of Jyväskylä.
 

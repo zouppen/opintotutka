@@ -52,4 +52,4 @@ data Level = GeneralStudies
            | SubjectStudies
            | AdvancedStudies
            | PostgraduateStudies
-           deriving (Show)
+           deriving (Show, Eq, Ord)
