@@ -9,7 +9,8 @@ import Text.Parsec.Combinator
 import Control.Monad (liftM)
 import Data.Maybe (catMaybes)
 import CalendarHelpers
-import Records                
+import Records        
+import ParsingHelpers (convert)
 
 --parseJoreFromFile :: String -> IO (Student,[Maybe Record])
 parseJoreFromFile f = do 
@@ -107,8 +108,8 @@ recordLine = do
   space
   rawgrade <- count 3 anyChar
   space
-  rawLevel <- count 2 anyChar
-  space
+  level <- liftM getStudyLevel anyChar
+  count 2 space
   credits <- liftM read $ count 5 anyChar
   newline
   
@@ -117,7 +118,7 @@ recordLine = do
     name
     date
     Pass -- FIXME
-    GeneralStudies -- FIXME
+    level
     credits
     
 recordOrNothing :: Parser (Maybe Record)
@@ -127,3 +128,13 @@ recordOrNothing = do
 takeAnythingYouWant = do
   recs <- manyTill recordOrNothing eof
   return $ catMaybes recs
+
+getStudyLevel = convert [ (' ',NoLevel)
+                        , ('Y',GeneralStudies)
+                        , ('K',LanguageStudies)
+                        , ('P',BasicStudies)
+                        , ('A',SubjectStudies)
+                        , ('S',AdvancedStudies)
+                        , ('J',PostgraduateStudies)
+                        ]
+                "Parse error of study level"

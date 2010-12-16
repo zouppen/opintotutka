@@ -46,7 +46,8 @@ data ThesisScale = Approbatur
                  | Laudatur
                  deriving (Show)
 
-data Level = GeneralStudies
+data Level = NoLevel -- Found on my student record on old courses only
+           | GeneralStudies
            | LanguageStudies
            | BasicStudies
            | SubjectStudies
