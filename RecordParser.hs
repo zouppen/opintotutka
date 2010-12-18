@@ -1,9 +1,8 @@
-module Testi where
+module RecordParser where
 
 import Data.Time.Calendar (Day)
 import Text.Parsec.Char
 import Text.Parsec.Text
---import Text.Parsec.String
 import Text.Parsec.Prim
 import Text.Parsec.Combinator
 import Control.Monad (liftM)
@@ -129,12 +128,17 @@ takeAnythingYouWant = do
   recs <- manyTill recordOrNothing eof
   return $ catMaybes recs
 
-getStudyLevel = convert [ (' ',NoLevel)
-                        , ('Y',GeneralStudies)
-                        , ('K',LanguageStudies)
-                        , ('P',BasicStudies)
-                        , ('A',SubjectStudies)
-                        , ('S',AdvancedStudies)
-                        , ('J',PostgraduateStudies)
-                        ]
+getStudyLevel = convert levelList
                 "Parse error of study level"
+
+getLevelLetter = convert (map (\(x,y) -> (y,x)) levelList)
+                 "Parse error of study level"
+
+levelList = [ (' ',NoLevel)
+            , ('Y',GeneralStudies)
+            , ('K',LanguageStudies)
+            , ('P',BasicStudies)
+            , ('A',SubjectStudies)
+            , ('S',AdvancedStudies)
+            , ('J',PostgraduateStudies)
+            ]
