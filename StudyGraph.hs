@@ -50,5 +50,5 @@ joreToCsv (_,rs) = header ++ "\n" ++ unlines rows
         rows   = map rowToText $ cumulativeTable $ studyTable rs
         showCourse (prefix,level) = prefix ++ [getLevelLetter level]
 
-rowToText (day,xs) = toCsv $ (show $ dayToUnix day):(map show xs)
+rowToText (day,xs) = toCsv $ (show day):(map show xs)
 toCsv   = intercalate ","
